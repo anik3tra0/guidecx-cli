@@ -7,6 +7,9 @@ mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 abs_dir := $(patsubst %/,%,$(dir $(mkfile_path)))
 current_dir := $(notdir $(abs_dir))
 
+clean:
+	rm -rf ./gcx-*
+
 lint:
 	bash stern_test.sh
 	go mod tidy -compat=1.17
