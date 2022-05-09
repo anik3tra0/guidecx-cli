@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/anik3tra0/guidecx-cli/model"
 	data "github.com/anik3tra0/guidecx-cli/store"
@@ -13,14 +12,14 @@ import (
 	"os"
 )
 
-const guideCXV1ApiUrl = "https://api.guidecx.com/api/v1"
-const guideCXV2ApiUrl = "https://api.guidecx.com/api/v2"
+const guideCXV1ApiURL = "https://api.guidecx.com/api/v1"
+const guideCXV2ApiURL = "https://api.guidecx.com/api/v2"
 
 var guideCXApiKey, _ = os.LookupEnv("GUIDECX_API_KEY")
 
 // GetProjects fetches all projects from your GuideCX Account
 func GetProjects(client *http.Client) ([]model.Project, error) {
-	apiURL := fmt.Sprintf("%s/projects", guideCXV1ApiUrl)
+	apiURL := fmt.Sprintf("%s/projects", guideCXV1ApiURL)
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
 		return nil, err
@@ -52,7 +51,7 @@ func GetProjects(client *http.Client) ([]model.Project, error) {
 
 // GetTasksByProjectID fetches all tasks for a project from your GuideCX Account
 func GetTasksByProjectID(client *http.Client, projectID string, milestoneID string) ([]model.Task, error) {
-	apiURL := fmt.Sprintf("%s/projects/%s/tasks?milestoneId=%s", guideCXV1ApiUrl, projectID, milestoneID)
+	apiURL := fmt.Sprintf("%s/projects/%s/tasks?milestoneId=%s", guideCXV1ApiURL, projectID, milestoneID)
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
 		return nil, err
@@ -84,7 +83,7 @@ func GetTasksByProjectID(client *http.Client, projectID string, milestoneID stri
 
 // GetMilestonesByProjectID fetches all milestones for a project from your GuideCX Account
 func GetMilestonesByProjectID(client *http.Client, projectID string) ([]model.Milestone, error) {
-	apiURL := fmt.Sprintf("%s/projects/%s/milestones", guideCXV1ApiUrl, projectID)
+	apiURL := fmt.Sprintf("%s/projects/%s/milestones", guideCXV1ApiURL, projectID)
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
 		return nil, err
@@ -116,7 +115,7 @@ func GetMilestonesByProjectID(client *http.Client, projectID string) ([]model.Mi
 
 // GetUsers fetches all users from your GuideCX Account
 func GetUsers(client *http.Client) ([]model.User, error) {
-	apiURL := fmt.Sprintf("%s/users", guideCXV2ApiUrl)
+	apiURL := fmt.Sprintf("%s/users", guideCXV2ApiURL)
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
 		return nil, err
@@ -164,14 +163,14 @@ func FindOrCreateProject(client *http.Client, projectName string) ([]byte, error
 		return newProject, nil
 	}
 
-	return nil, errors.New(fmt.Sprintf("Project %s not found", projectName))
+	return nil, fmt.Errorf("Project %s not found", projectName)
 }
 
 // CreateTaskByProjectID fetches a particular task or creates a new task for a project from your GuideCX Account
 func CreateTaskByProjectID(client *http.Client, ctr *data.CreateTaskRequest, projectID string) (data.CreateTaskResponse, error) {
 	var task data.CreateTaskResponse
 	reqBody, _ := json.Marshal(ctr)
-	apiURL := fmt.Sprintf("%s/projects/%s/tasks", guideCXV2ApiUrl, projectID)
+	apiURL := fmt.Sprintf("%s/projects/%s/tasks", guideCXV2ApiURL, projectID)
 
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(reqBody))
 	if err != nil {
@@ -202,11 +201,12 @@ func CreateTaskByProjectID(client *http.Client, ctr *data.CreateTaskRequest, pro
 	return task, nil
 }
 
+// CreateTimeRecord adds time to a task
 func CreateTimeRecord(client *http.Client, ctr data.CreateTimeRecordRequest) (data.CreateTimeRecordResponse, error) {
 	var timeRecordResponse data.CreateTimeRecordResponse
 	reqBody, _ := json.Marshal(ctr)
 	log.Println(string(reqBody))
-	apiURL := fmt.Sprintf("%s/time-records", guideCXV2ApiUrl)
+	apiURL := fmt.Sprintf("%s/time-records", guideCXV2ApiURL)
 
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(reqBody))
 	if err != nil {

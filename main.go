@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	// VERSION Version of CLI
 	VERSION      = "0.0.1"
 	VersionLabel = "alpha"
 )

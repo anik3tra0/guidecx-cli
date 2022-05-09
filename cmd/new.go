@@ -34,7 +34,7 @@ func initData() {
 	guideCXAPIClient = http.DefaultClient
 	projects, err := api.GetProjects(guideCXAPIClient)
 	if err != nil {
-		log.Println(string(colorRed), err)
+		log.Println(colorRed, err)
 		os.Exit(1)
 	}
 
@@ -43,7 +43,7 @@ func initData() {
 	users, err := api.GetUsers(guideCXAPIClient)
 
 	if err != nil {
-		log.Println(string(colorRed), err)
+		log.Println(colorRed, err)
 		os.Exit(1)
 	}
 
@@ -60,7 +60,7 @@ func addTimeToTask() {
 	user := promptSelectUser(userPromptContent)
 	// Get User ID
 	userID := findUserID(user)
-	log.Println(string(colorGreen), "User ID:", userID)
+	log.Println(colorGreen, "User ID:", userID)
 
 	// Get Project from Selection
 	projectPromptContent := model.PromptContent{
@@ -72,12 +72,12 @@ func addTimeToTask() {
 
 	// Get Project ID
 	projectID := findProjectID(project)
-	log.Println(string(colorGreen), "Project ID:", projectID)
+	log.Println(colorGreen, "Project ID:", projectID)
 
 	// Find all milestones for a projectID
 	milestones, err := api.GetMilestonesByProjectID(guideCXAPIClient, projectID)
 	if err != nil {
-		log.Println(string(colorRed), err)
+		log.Println(colorRed, err)
 		os.Exit(1)
 	}
 
@@ -99,14 +99,14 @@ func addTimeToTask() {
 	milestone := promptSelectMilestone(milestonePromptContent, milestoneNames)
 	milestoneID := findMilestoneID(milestone)
 
-	log.Println(string(colorGreen), "MilestoneID", milestoneID)
+	log.Println(colorGreen, "MilestoneID", milestoneID)
 
 	var taskNames []string
 
 	// Find all tasks for a projectID
 	tasks, err := api.GetTasksByProjectID(guideCXAPIClient, projectID, milestoneID)
 	if err != nil {
-		log.Println(string(colorRed), err)
+		log.Println(colorRed, err)
 		os.Exit(1)
 	}
 
@@ -145,7 +145,7 @@ func addTimeToTask() {
 
 		taskData, err := api.CreateTaskByProjectID(guideCXAPIClient, &ctr, projectID)
 		if err != nil {
-			log.Println(string(colorRed), "Something went wrong. Please try again")
+			log.Println(colorRed, "Something went wrong. Please try again")
 			addTimeToTask()
 		}
 
@@ -153,7 +153,7 @@ func addTimeToTask() {
 		taskObj.Name = taskData.Name
 	}
 
-	log.Println(string(colorGreen), "TaskID", taskObj.Id)
+	log.Println(colorGreen, "TaskID", taskObj.Id)
 
 	// Get time(in hours) from Input
 	timePromptContent := model.PromptContent{
@@ -164,7 +164,7 @@ func addTimeToTask() {
 	hours := promptGetInput(timePromptContent)
 	taskTimeRecord, err := strconv.ParseFloat(hours, 64)
 	if err != nil {
-		log.Println(string(colorRed), "NaN. Enter a numeric value. Floats are allowed. Start this flow again")
+		log.Println(colorRed, "NaN. Enter a numeric value. Floats are allowed. Start this flow again")
 	}
 
 	// Get billable boolean from Input
@@ -182,14 +182,14 @@ func addTimeToTask() {
 
 	timeRecordResponse, err := api.CreateTimeRecord(guideCXAPIClient, timeRecordRequest)
 	if err != nil {
-		log.Println(string(colorRed), err)
+		log.Println(colorRed, err)
 		addTimeToTask()
 	}
 
 	if len(timeRecordResponse.Id) > 0 {
-		log.Println(string(colorGreen), fmt.Sprintf("Successfully added %2f to Task: %s for Milestone: %s under Project: %s", timeRecordResponse.Hours, taskName, milestone, project))
+		log.Println(colorGreen, fmt.Sprintf("Successfully added %2f to Task: %s for Milestone: %s under Project: %s", timeRecordResponse.Hours, taskName, milestone, project))
 	} else {
-		log.Println(string(colorRed), "Something went wrong, Please try this flow again")
+		log.Println(colorRed, "Something went wrong, Please try this flow again")
 	}
 
 }
