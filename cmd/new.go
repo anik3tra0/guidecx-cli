@@ -155,42 +155,46 @@ func addTimeToTask() {
 
 	log.Println(colorGreen, "TaskID", taskObj.Id)
 
-	// Get time(in hours) from Input
-	timePromptContent := model.PromptContent{
-		ErrorMsg: "Please enter time in hours. 15 mins is 0.25, 30 mins is 0.50, 45 mins is 0.75",
-		Label:    "Please enter time in hours. 15 mins is 0.25, 30 mins is 0.50, 45 mins is 0.75",
-	}
-
-	hours := promptGetInput(timePromptContent)
-	taskTimeRecord, err := strconv.ParseFloat(hours, 64)
-	if err != nil {
-		log.Println(colorRed, "NaN. Enter a numeric value. Floats are allowed. Start this flow again")
-	}
-
 	// Get billable boolean from Input
 	billable := promptYesNoInput()
 
-	timeRecordRequest := store.CreateTimeRecordRequest{
-		DateOfWork:  time.Now().Format("2006-01-02"),
-		ProjectId:   projectID,
-		TaskId:      taskObj.Id,
-		UserId:      userID,
-		Hours:       taskTimeRecord,
-		Billable:    billable,
-		Description: "",
+	if billable {
+		// Get time(in hours) from Input
+		timePromptContent := model.PromptContent{
+			ErrorMsg: "Please enter time in hours. 15 mins is 0.25, 30 mins is 0.50, 45 mins is 0.75",
+			Label:    "Please enter time in hours. 15 mins is 0.25, 30 mins is 0.50, 45 mins is 0.75",
+		}
+
+		hours := promptGetInput(timePromptContent)
+		taskTimeRecord, err := strconv.ParseFloat(hours, 64)
+		if err != nil {
+			log.Println(colorRed, "NaN. Enter a numeric value. Floats are allowed. Start this flow again")
+		}
+
+		timeRecordRequest := store.CreateTimeRecordRequest{
+			DateOfWork:  time.Now().Format("2006-01-02"),
+			ProjectId:   projectID,
+			TaskId:      taskObj.Id,
+			UserId:      userID,
+			Hours:       taskTimeRecord,
+			Billable:    billable,
+			Description: "",
+		}
+
+		timeRecordResponse, err := api.CreateTimeRecord(guideCXAPIClient, timeRecordRequest)
+		if err != nil {
+			log.Println(colorRed, err)
+			addTimeToTask()
+		}
+
+		if len(timeRecordResponse.Id) > 0 {
+			log.Println(colorGreen, fmt.Sprintf("Successfully added %2f to Task: %s for Milestone: %s under Project: %s", timeRecordResponse.Hours, taskName, milestone, project))
+		} else {
+			log.Println(colorRed, "Something went wrong, Please try this flow again")
+		}
 	}
 
-	timeRecordResponse, err := api.CreateTimeRecord(guideCXAPIClient, timeRecordRequest)
-	if err != nil {
-		log.Println(colorRed, err)
-		addTimeToTask()
-	}
-
-	if len(timeRecordResponse.Id) > 0 {
-		log.Println(colorGreen, fmt.Sprintf("Successfully added %2f to Task: %s for Milestone: %s under Project: %s", timeRecordResponse.Hours, taskName, milestone, project))
-	} else {
-		log.Println(colorRed, "Something went wrong, Please try this flow again")
-	}
+	log.Println(colorGreen, fmt.Sprintf("Successfully created Task: %s for Milestone: %s under Project: %s", taskName, milestone, project))
 
 }
 

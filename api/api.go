@@ -12,8 +12,18 @@ import (
 	"os"
 )
 
-const guideCXV1ApiURL = "https://api.guidecx.com/api/v1"
-const guideCXV2ApiURL = "https://api.guidecx.com/api/v2"
+const (
+	guideCXV1ApiURL = "https://api.guidecx.com/api/v1"
+	guideCXV2ApiURL = "https://api.guidecx.com/api/v2"
+	notStarted      = "not_started"
+	workingOnIt     = "working_on_it"
+	stuck           = "stuck"
+	signOff         = "sign_off"
+	done            = "done"
+	notApplicable   = "not_applicable"
+	notScheduled    = "not_scheduled"
+	scheduled       = "scheduled"
+)
 
 var guideCXApiKey, _ = os.LookupEnv("GUIDECX_API_KEY")
 
