@@ -88,7 +88,15 @@ func GetTasksByProjectID(client *http.Client, projectID string, milestoneID stri
 		return nil, err
 	}
 
-	return tasksRespData.Tasks, nil
+	var tasks []model.Task
+
+	for _, t := range tasksRespData.Tasks {
+		if t.MilestoneId == milestoneID {
+			tasks = append(tasks, t)
+		}
+	}
+
+	return tasks, nil
 }
 
 // GetMilestonesByProjectID fetches all milestones for a project from your GuideCX Account

@@ -11,7 +11,7 @@ $ GUIDECX_API_KEY="<your-api-key>" ./gcx-linux-amd64 time new
 ```
 
 ## Workflows Supported
-1. Ability to add Billable/NonBillable hours to a task :white_check_mark:
+1. Ability to add only NonBillable hours to a task :white_check_mark:
 
 ## Contributions
 
